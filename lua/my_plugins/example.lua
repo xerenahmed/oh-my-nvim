@@ -7,4 +7,11 @@ return {
 
 	-- Your Plugin2
 	--  {'hardhacker/plugin2'},
+    
+    {
+        'numToStr/Comment.nvim',
+        config = function()
+            require('Comment').setup()
+        end
+    }
 }

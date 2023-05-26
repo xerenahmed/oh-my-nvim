@@ -21,6 +21,6 @@ return {
 	home_footer = {
 		"",
 		"",
-		" hardhacker",
+		" xerenahmed",
 	},
 }
