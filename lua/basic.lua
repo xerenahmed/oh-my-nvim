@@ -2,7 +2,7 @@ HOME = os.getenv("HOME")
 
 vim.opt.termguicolors = true
 vim.opt.cursorline = true
-vim.opt.updatetime = 300
+vim.opt.updatetime = 200
 
 -- Basic settings
 vim.opt.encoding = "utf-8"
@@ -82,4 +82,6 @@ vim.cmd([[
     exec        "nohlsearch"
     syntax      enable
     syntax      on
+    " press esc to cancel search highlight
+    nnoremap <silent> <Esc> :nohlsearch<CR>:echo<CR>
 ]])
