@@ -10,6 +10,7 @@ local function set_keymap()
 	map("n", keys.jump_down_window, "<C-W>j", option)
 	map("n", keys.jump_up_window, "<C-W>k", option)
 	map("n", keys.jump_right_window, "<C-W>l", option)
+    map('n', 'ow', '<Cmd>Bdelete<CR>', option)
 
 	-- Supported by bufdelete
 	vim.cmd([[cnoreabbrev bdelete Bdelete]])
