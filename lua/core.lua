@@ -12,12 +12,26 @@ local function set_keymap()
 	map("n", keys.jump_right_window, "<C-W>l", option)
     map('n', 'ow', '<Cmd>Bdelete<CR>', option)
 
+	vim.cmd([[
+    " press esc to cancel search highlight
+    nnoremap <silent> <Esc> :nohlsearch<CR>:echo<CR>
+	]])
+
+	-- for markdown file
+	vim.cmd([[
+    " optimized up and down move when set wrap for markdown file
+    autocmd FileType markdown noremap <buffer> j gj
+    autocmd FileType markdown noremap <buffer> k gk
+	autocmd FileType markdown setlocal wrap
+	]])
+
 	-- Supported by bufdelete
-	vim.cmd([[cnoreabbrev bdelete Bdelete]])
-	vim.cmd([[cnoreabbrev bdelete! Bdelete!]])
-	vim.cmd([[cnoreabbrev bwipeout Bwipeout]])
-	vim.cmd([[cnoreabbrev bwipeout! Bwipeout!]])
-	-- vim.cmd([[cnoreabbrev q Bdelete]])
+	vim.cmd([[
+	cnoreabbrev bdelete Bdelete
+	cnoreabbrev bdelete! Bdelete!
+	cnoreabbrev bwipeout Bwipeout
+	cnoreabbrev bwipeout! Bwipeout!
+	]])
 
 	-- Supported by bufferline
 	map("n", keys.pick_tab, ":BufferLinePick<CR>", option)
@@ -38,6 +52,12 @@ local function set_keymap()
 	local float_terminal_default = require("toggleterm.terminal").Terminal:new({
 		direction = "float",
 		on_open = function(term)
+			-- forced to change the working dir for terminal
+			-- This will solve the problem of not updating the directory when switching sessions.
+			local cwd = vim.fn.getcwd()
+			if cwd ~= term.dir then
+				term:change_dir(cwd)
+			end
 			-- when float term opened, disable bottom terminal
 			vim.api.nvim_del_keymap("t", keys.terminal_bottom)
 			vim.cmd("startinsert!")
@@ -55,8 +75,15 @@ local function set_keymap()
 	local bottom_terminal_default = require("toggleterm.terminal").Terminal:new({
 		direction = "horizontal",
 		on_open = function(term)
+			-- forced to change the working dir for terminal
+			-- This will solve the problem of not updating the directory when switching sessions.
+			local cwd = vim.fn.getcwd()
+			if cwd ~= term.dir then
+				term:change_dir(cwd)
+			end
+
+			-- set keymapping
 			local opts = { buffer = 0 }
-			vim.api.nvim_buf_set_keymap(term.bufnr, "t", "<esc>", [[<C-\><C-n>]], { noremap = true, silent = true })
 			vim.api.nvim_buf_set_keymap(
 				term.bufnr,
 				"t",
@@ -109,32 +136,6 @@ local function set_keymap()
 	map("n", keys.switch_session, ":SessionManager load_session<CR>", option)
 end
 
--- Set up the save shortcut
-local function set_save_shortcut()
-	local is_mac = vim.fn.has("mac") == 1
-	local is_linux = vim.fn.has("unix") == 1 and not is_mac
-	local is_windows = vim.fn.has("win32") == 1
-
-	-- Define key mappings
-	local map = function(mode, lhs, rhs)
-		vim.api.nvim_set_keymap(mode, lhs, rhs, { noremap = true })
-	end
-
-	if is_mac then
-		map("n", "<D-s>", ":w<CR>")
-		map("v", "<D-s>", ":w<CR>")
-		map("i", "<D-s>", "<Esc>:w<CR>a")
-	elseif is_linux then
-		map("n", "<C-s>", ":w<CR>")
-		map("v", "<C-s>", ":w<CR>")
-		map("i", "<C-s>", "<Esc>:w<CR>a")
-	elseif is_windows then
-		map("n", "<C-s>", ":w<CR>")
-		map("v", "<C-s>", ":w<CR>")
-		map("i", "<C-s>", "<Esc>:w<CR>a")
-	end
-end
-
 -- Set up transparency
 local function set_transparency()
 	local transparency = opts.window_transparency
@@ -145,10 +146,8 @@ local function set_transparency()
 end
 
 -- Set up auto command
-local function set_autocmd()
-end
+local function set_autocmd() end
 
 set_keymap()
-set_save_shortcut()
 set_transparency()
 set_autocmd()
